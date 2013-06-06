@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -34,10 +33,13 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.Vector;
 
-import com.tecnicsassociats.gisras.Constants;
 import com.tecnicsassociats.gisras.util.Utils;
 
+
 public class MainDao {
+	
+	public static final String CONFIG_FOLDER = "config";
+	public static final String CONFIG_FILE = "config.properties";
 	
     public static Connection connectionConfig;   // SQLite
 	public static Connection connectionPostgis;   // Postgis
@@ -62,12 +64,7 @@ public class MainDao {
         // Get INP folder
         folderConfig = iniProperties.getProperty("FOLDER_CONFIG");
         folderConfig = appPath + folderConfig + File.separator;
-
-    	// Set Config DB connection
-        if (!setConnectionConfig(Constants.CONFIG_DB)){
-        	return false;
-        }
-        
+  
         // Get PDF help file
         if (fileHelp == null) {
             String filePath = iniProperties.getProperty("FILE_HELP", "help.pdf");
@@ -106,7 +103,7 @@ public class MainDao {
     public static boolean enabledPropertiesFile() {
 
     	appPath = Utils.getAppPath();
-        configPath = appPath + Constants.CONFIG_FOLDER + File.separator + Constants.CONFIG_FILE;
+        configPath = appPath + CONFIG_FOLDER + File.separator + CONFIG_FILE;
         Utils.getLogger().info("Config file: " + configPath);
         File fileIni = new File(configPath);
         try {
@@ -365,33 +362,6 @@ public class MainDao {
 		sql = "DELETE FROM public.geometry_columns WHERE f_table_schema = '" + schemaName + "'";
 		executeUpdateSql(sql, true);			
 	}
-
-
-	private static String addGeometryColumnsTables(String schemaName, String srid) {
-		
-		String content = "";
-		content+= "SELECT addgeometryColumn('" + schemaName + "', 'arc', 'the_geom', '" + srid + "', 'MULTILINESTRING', 2);\n";
-		content+= "SELECT addgeometryColumn('" + schemaName + "', 'node', 'the_geom', '" + srid + "', 'POINT', 2);\n";
-		content+= "SELECT addgeometryColumn('" + schemaName + "', 'subcatchment', 'the_geom', '" + srid + "', 'MULTIPOLYGON', 2);\n";
-		content+= "SELECT addgeometryColumn('" + schemaName + "', 'catchment', 'the_geom', '" + srid + "', 'MULTIPOLYGON', 2);\n";		
-		content+= "SELECT addgeometryColumn('" + schemaName + "', 'raingage', 'the_geom', '" + srid + "', 'POINT', 2);\n";
-		content+= "SELECT addgeometryColumn('" + schemaName + "', 'vertice', 'the_geom', '" + srid + "', 'POINT', 2);\n";
-		content+= "SELECT addgeometryColumn('" + schemaName + "', 'connec', 'the_geom', '" + srid + "', 'POINT', 2);\n";
-		content+= "SELECT addgeometryColumn('" + schemaName + "', 'gully', 'the_geom', '" + srid + "', 'POINT', 2);\n";
-		return content;
-		
-	}
-	
-	private static String addGeometryColumnsViews(String schemaName, String srid) {
-		
-		String content = "";
-		content+= "INSERT INTO public.geometry_columns VALUES (' ', '" + schemaName + "', 'v_man_arc', 'the_geom', '2', '" + srid + "', 'MULTILINESTRING');\n";
-		content+= "INSERT INTO public.geometry_columns VALUES (' ', '" + schemaName + "', 'v_man_node', 'the_geom', '2', '" + srid + "', 'POINT');\n";
-		content+= "INSERT INTO public.geometry_columns VALUES (' ', '" + schemaName + "', 'v_rpt_arcflow_sum', 'the_geom', '2', '" + srid + "', 'POINT');\n";
-		content+= "INSERT INTO public.geometry_columns VALUES (' ', '" + schemaName + "', 'v_rpt_nodeflood_sum', 'the_geom', '2', '" + srid + "', 'POINT');\n";
-		return content;
-		
-	}	
 
 	
 	public static boolean createSdfFile(String fileName) {
