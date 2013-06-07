@@ -34,6 +34,7 @@ public class Utils {
 	private static final ResourceBundle BUNDLE_FORM = ResourceBundle.getBundle("form"); //$NON-NLS-1$
 	private static final ResourceBundle BUNDLE_TEXT = ResourceBundle.getBundle("text"); //$NON-NLS-1$
     private static Logger logger;
+	private static String logFolder;
     private static final String LOG_FOLDER = "log/";
 
     
@@ -42,13 +43,13 @@ public class Utils {
     	if (logger == null) {
             try {
             	String folderRoot = Utils.getAppPath();         	
-                String folder = folderRoot + LOG_FOLDER;
-                File folderFile = new File(folder);
+                logFolder = folderRoot + LOG_FOLDER;
+                File folderFile = new File(logFolder);
                 folderFile.mkdirs();
                 if (!folderFile.exists()){
                     JOptionPane.showMessageDialog(null, "Could not create log folder", "Log creation", JOptionPane.ERROR_MESSAGE);                	
                 }
-                String logFile = folder + "log_" + getCurrentTimeStamp() + ".log";
+                String logFile = logFolder + "log_" + getCurrentTimeStamp() + ".log";
                 FileHandler fh = new FileHandler(logFile, true);
                 LogFormatter lf = new LogFormatter();
                 fh.setFormatter(lf);
@@ -64,6 +65,10 @@ public class Utils {
 
     }
     
+    
+    public static String getLogFolder(){
+    	return logFolder;
+    }
     
     public static String getAppPath(){
     	
@@ -345,16 +350,18 @@ public class Utils {
 
     
 	public static void execProcess(String process){
+		
 		try{    
 			//Process p = Runtime.getRuntime().exec(file);
 			Process p = Runtime.getRuntime().exec("cmd /c start " + process);				
 			p.waitFor();
-		}catch( IOException ex ){
-		    System.out.println("IOException Error");
-		}catch( InterruptedException ex ){
-		    System.out.println("InterruptedException Error");
+		} catch( IOException ex ){
+		    getLogger().warning("IOException Error");
+		} catch( InterruptedException ex ){
+			getLogger().warning("InterruptedException Error");
 
-		}		
+		}	
+		
 	}
 	
     

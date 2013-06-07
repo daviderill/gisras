@@ -370,7 +370,7 @@ public class MainDao {
 	}
 	
 	
-	public static boolean clearInfo(){
+	public static boolean clearData(){
 		String sql = "SELECT gisras.gr_clear();";
 		return executeSql(sql);	
 	}
@@ -411,6 +411,46 @@ public class MainDao {
 		return folder;
 		
 	}
+
+
+	public static void loadRaster(String raster) {
+
+		String aux, logFolder;
+
+		// No he pogut provar aquesta instrucció ja que no tinc l'eina a la meva màquina
+		String fileSql = raster.replace(".asc", ".sql");
+		aux = "raster2pgsql -d -s 0 -I -C -M " + raster + " -F -t 100x100 gisras.mdt > " + fileSql;
+		Utils.getLogger().info(aux);
+		Utils.execProcess(aux);
+		
+		// Aquesta em funciona correctament. Se t'obre finestra MS-DOS i et pregunta password
+		// Redirigeixo resultat de la instrucció a fitxer de .log
+		logFolder = Utils.getLogFolder();
+		aux = "psql -U derill -h cloud -p 5433 -d david -f " + fileSql + " > " + logFolder + "load_raster.log";
+		Utils.getLogger().info(aux);
+		Utils.execProcess(aux);
+		
+		// Funciona
+//		String sql = "INSERT INTO gisras.log VALUES ('test', 'test_raster', CURRENT_TIMESTAMP);";
+//		aux = "psql -U derill -h cloud -p 5433 -d gisras -c \"" + sql + "\"";
+		
+	}
+	
+	
+	public void execProcess(String process){
+		
+		try{    
+			Process p = Runtime.getRuntime().exec(process);
+			//Process p = Runtime.getRuntime().exec("cmd /c start " + process);
+			p.waitFor();
+			p.destroy();
+		} catch(IOException e ){
+		    Utils.getLogger().warning(e.getMessage());
+		} catch(InterruptedException e ){
+			Utils.getLogger().warning(e.getMessage());
+		}
+		
+	}		
 
 	
 }

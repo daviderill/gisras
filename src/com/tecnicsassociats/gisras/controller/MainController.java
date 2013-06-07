@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -41,14 +42,10 @@ public class MainController{
 	private Form view;
     private Properties prop;
     private File fileSdf;
+    private File fileAsc;    
     private String projectName;
     private boolean readyFileSdf = false;
-    
-    private boolean clearInfoSelected;
-    private boolean createFileSelected;
-    private boolean caseNewSelected;
-    private boolean caseLoadSelected;
-    private boolean caseDeleteSelected;
+    private boolean readyFileAsc = false;
     
     private String userHomeFolder;
     private ResourceBundle bundleText;
@@ -74,6 +71,11 @@ public class MainController{
 			view.setFileSdf(fileSdf.getAbsolutePath());
 			readyFileSdf = true;
 		}
+    	fileAsc = new File(prop.getProperty("FILE_ASC", userHomeFolder));
+		if (fileAsc.exists()) {
+			view.setFileAsc(fileAsc.getAbsolutePath());
+			readyFileAsc = true;
+		}		
 		
 		projectName = prop.getProperty("PROJECT_NAME");
 		view.setNewSchemaName(projectName);
@@ -139,77 +141,102 @@ public class MainController{
         }
 
     }
+    
+    
+    public void chooseFileAsc() {
 
-
-    public void executeAccept() {
-
-        boolean continueExec = true;
-        
-        // Which checks are selected?
-        clearInfoSelected = view.isClearInfoSelected();
-        createFileSelected = view.isCreateFileSelected();
-        caseNewSelected = view.isCaseNewSelected();
-        caseLoadSelected = view.isCaseLoadSelected();
-        caseDeleteSelected = view.isCaseDeleteSelected();
-        
-        if (!clearInfoSelected && !createFileSelected && !caseNewSelected && !caseLoadSelected && !caseDeleteSelected){
-            //Utils.showError("select_option", "", "gisRAS");
-            Utils.showError("At least one option has to be checked", "", "gisRAS");            
-            return;
+        JFileChooser chooser = new JFileChooser();
+        FileFilter filter = new FileNameExtensionFilter("ASC extension file", "asc");
+        chooser.setFileFilter(filter);
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setDialogTitle(bundleText.getString("file_asc"));
+        File file = new File(prop.getProperty("FILE_ASC", userHomeFolder));	
+        chooser.setCurrentDirectory(file.getParentFile());
+        int returnVal = chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+        	fileAsc = chooser.getSelectedFile();
+            String path = fileAsc.getAbsolutePath();
+            if (path.lastIndexOf(".") == -1) {
+                path += ".asc";
+                fileAsc = new File(path);
+            }
+            view.setFileAsc(fileAsc.getAbsolutePath());            
+            prop.put("FILE_ASC", fileAsc.getAbsolutePath());
+            MainDao.savePropertiesFile();
+            readyFileAsc = true;
         }
 
-        view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        // Clear gisras schema info
-        if (clearInfoSelected) {
-        	Utils.getLogger().info("clearInfo");
-        	continueExec = MainDao.clearInfo();
-        }
-        
-        // Create HEC-RAS file
-        if (createFileSelected) {
-        	Utils.getLogger().info("createFile");
-        	createFile();
-        }
-        
-        // Save case
-        if (caseNewSelected && continueExec) {
-        	Utils.getLogger().info("caseNew");        	
-        	String schemaName = view.getNewSchemaName();        	
-        	continueExec = MainDao.caseNew(schemaName);
-        	view.setSchemas(MainDao.getSchemas());        	
-        }        
-        
-        // Open case
-        if (caseLoadSelected && continueExec) {
-        	Utils.getLogger().info("caseLoad");
-        	String schemaName = view.getSchema();
-            if (schemaName.equals("")){
-                Utils.showError("Any schema selected", "", "gisRAS");
-                return;
-            }        	
-        	continueExec = MainDao.caseLoad(schemaName);
-        } 
+    }    
+    
 
-        // Delete case
-        if (caseDeleteSelected && continueExec) {
-        	Utils.getLogger().info("caseDelete");
-        	String schemaName = view.getSchema();
-            if (schemaName.equals("")){
-                Utils.showError("Any schema selected", "", "gisRAS");
-                return;
-            }          	
-        	continueExec = MainDao.caseDelete(schemaName);
-        	view.setSchemas(MainDao.getSchemas());
-        }         
-        
-        view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));        
-       
+    // Clear gisras schema info    
+    public void clearData(){
+    	    	
+        int res = JOptionPane.showConfirmDialog(this.view, "Are you sure you want to clear data?", "gisRAS", JOptionPane.YES_NO_OPTION);
+        if (res == 0){
+    		view.setCursor(new Cursor(Cursor.WAIT_CURSOR));	        	
+        	MainDao.clearData();
+        	view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }    	
+    	
     }
 
+    
+    public void saveCase(){
+    	
+    	String schemaName = view.getNewSchemaName();        	
+    	MainDao.caseNew(schemaName);
+    	view.setSchemas(MainDao.getSchemas());        	
+        	
+    }
 
-	private void createFile() {
-
+    
+    public void loadCase(){
+    	
+    	String schemaName = view.getSchema();
+        if (schemaName.equals("")){
+            Utils.showError("Any schema selected", "", "gisRAS");
+            return;
+        }        	
+    	MainDao.caseLoad(schemaName);  	
+        	
+    }
+    
+    
+    public void deleteCase(){
+    	
+    	String schemaName = view.getSchema();
+        if (schemaName.equals("")){
+            Utils.showError("Any schema selected", "", "gisRAS");
+            return;
+        }          	
+        int res = JOptionPane.showConfirmDialog(this.view, "Are you sure you want to delete selected schema?", "gisRAS", JOptionPane.YES_NO_OPTION);
+        if (res == 0){
+    		view.setCursor(new Cursor(Cursor.WAIT_CURSOR));	        	
+        	MainDao.caseDelete(schemaName);
+        	view.setSchemas(MainDao.getSchemas());
+        	view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }   
+        	
+    }    
+    
+    
+    public void loadRaster(){
+    	
+		// Comprobamos que se ha especificado fichero .asc
+		if (!readyFileAsc) {
+			Utils.showError("file_inp_not_selected", "", "gisRAS");
+			return;
+		}
+		String fileName = fileAsc.getAbsolutePath();
+    	MainDao.loadRaster(fileName);  	
+        	
+    }
+    
+    
+    // Create HEC-RAS file    
+	public void exportSdf() {
+   	
 		// Comprobamos que se ha especificado fichero .sdf
 		if (!readyFileSdf) {
 			Utils.showError("file_inp_not_selected", "", "gisRAS");

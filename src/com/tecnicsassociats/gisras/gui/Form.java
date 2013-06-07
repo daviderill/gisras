@@ -61,9 +61,7 @@ public class Form extends JPanel implements ActionListener {
 	private DatabaseController databaseController;	
 	
 	private JFrame f;
-	private JTextArea txtFileSdf;
 	private JButton btnFileSdf;
-	private JButton btnAccept;
 	private JComboBox<String> cboSchema;
 	private JPanel panel;
 	private JLabel lblNewLabel;
@@ -81,16 +79,27 @@ public class Form extends JPanel implements ActionListener {
 	private JButton btnTest;
 	private JCheckBox chkRemember;
 	
-	private JPanel panel_4;
+	private JPanel panel_2;
 	private JTabbedPane tabbedPane;
-	private JScrollPane scrollPane_2;
-	private JCheckBox chkClearInfo;
-	private JCheckBox chkCreateFile;
-	private JCheckBox chkCaseNew;
 	private JLabel lblNombre;
+	private JPanel panel_3;
+	private JLabel lblDataManager;
+	private JButton btnClearData;
+	private JButton btnLoadRaster;
+	private JButton btnExportSdf;
+	private JLabel label;
+	private JScrollPane scrollPane;
+	private JTextArea txtFileSdf;
+	private JPanel panel_4;
+	private JLabel lblSchemaManager;
+	private JButton btnSaveCase;
+	private JButton btnLoadCase;
+	private JButton btnDeleteCase;
 	private JTextField txtSchemaName;
-	private JCheckBox chkCaseLoad;
-	private JCheckBox chkCaseDelete;
+	private JLabel lblAscFile;
+	private JTextArea txtFileAsc;
+	private JScrollPane scrollPane_1;
+	private JButton btnFileAsc;
 
 	
 	public Form() {
@@ -126,7 +135,6 @@ public class Form extends JPanel implements ActionListener {
 	
 	// Panel Database Options
 	public void enableButtons(boolean isEnabled) {
-		btnAccept.setEnabled(isEnabled);
 	}
 
 	public Integer getDriver() {
@@ -179,27 +187,7 @@ public class Form extends JPanel implements ActionListener {
 	}
 	
 
-	// Main Panel
-	public boolean isClearInfoSelected() {
-		return chkClearInfo.isSelected();
-	}
-	
-	public boolean isCreateFileSelected() {
-		return chkCreateFile.isSelected();
-	}
-
-	public boolean isCaseNewSelected() {
-		return chkCaseNew.isSelected();
-	}
-
-	public boolean isCaseLoadSelected() {
-		return chkCaseLoad.isSelected();
-	}
-	
-	public boolean isCaseDeleteSelected() {
-		return chkCaseDelete.isSelected();
-	}
-	
+	// Panel Data Manager
 	public void setNewSchemaName(String projectName) {
 		txtSchemaName.setText(projectName.trim());
 	}
@@ -224,6 +212,10 @@ public class Form extends JPanel implements ActionListener {
 	public void setFileSdf(String path) {
 		txtFileSdf.setText(path);
 	}
+	
+	public void setFileAsc(String path) {
+		txtFileAsc.setText(path);
+	}	
 
 	public void close() {
 		f.setVisible(false);
@@ -241,8 +233,7 @@ public class Form extends JPanel implements ActionListener {
 
 		// Panel Database Options
 		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab(
-				BUNDLE.getString("Form.panel_1.title"), null, panel_1, null); //$NON-NLS-1$
+		tabbedPane.addTab(BUNDLE.getString("Form.panel_1.title"), null, panel_1, null); //$NON-NLS-1$
 		panel_1.setLayout(new MigLayout("", "[10][][380]",
 				"[5][208.00][10][80][]"));
 
@@ -300,8 +291,7 @@ public class Form extends JPanel implements ActionListener {
 		txtPassword.setText("");
 		panel.add(txtPassword, "cell 3 6,growx");
 
-		chkRemember = new JCheckBox(
-				BUNDLE.getString("Form.chckbxNewCheckBox.text")); //$NON-NLS-1$
+		chkRemember = new JCheckBox(BUNDLE.getString("Form.chckbxNewCheckBox.text")); //$NON-NLS-1$
 		chkRemember.setSelected(true);
 		panel.add(chkRemember, "cell 3 7,aligny baseline");
 
@@ -312,80 +302,120 @@ public class Form extends JPanel implements ActionListener {
 
 
 		// Panel gisRAS
-		panel_4 = new JPanel();
-		tabbedPane.addTab(
-				BUNDLE.getString("Form.panel_3.title"), null, panel_4, null); //$NON-NLS-1$
-		panel_4.setLayout(new MigLayout("", "[8px][:70.00:70px][90.00px][152.00][:114.00:100px][]", "[8px][30px][30][44][8px][30px][30][30][]"));
-
-		chkClearInfo = new JCheckBox();
-		chkClearInfo.setText(BUNDLE.getString("Form.chkDelete.text")); //$NON-NLS-1$
-		panel_4.add(chkClearInfo, "cell 1 1 3 1");
-
-		chkCreateFile = new JCheckBox();
-		chkCreateFile.setText(BUNDLE
-				.getString("Form.chckbxGenerarElFichero.text")); //$NON-NLS-1$
-		panel_4.add(chkCreateFile, "cell 1 2 4 1");
-
-		JLabel label = new JLabel();
-		label.setText(BUNDLE.getString("Form.label.text")); //$NON-NLS-1$
-		panel_4.add(label, "cell 1 3,alignx right");
+		panel_2 = new JPanel();
+		tabbedPane.addTab(BUNDLE.getString("Form.panel_3.title"), null, panel_2, null); //$NON-NLS-1$
+		panel_2.setLayout(new MigLayout("", "[40px][90.00px][152.00][:114.00:100px][]", "[8px][15][30][30px][50][][10][15][100][30px][]"));
 		
-				btnFileSdf = new JButton();
-				btnFileSdf.setActionCommand(BUNDLE
-						.getString("Form.btnFileInp.actionCommand")); //$NON-NLS-1$
-				btnFileSdf.setText("...");
-				btnFileSdf.setFont(new Font("Tahoma", Font.BOLD, 12));
-				panel_4.add(btnFileSdf, "cell 5 3,alignx center");
-
-		chkCaseNew = new JCheckBox();
-		chkCaseNew.setText(BUNDLE.getString("Form.chckbxGuardarElCaso.text")); //$NON-NLS-1$
-		panel_4.add(chkCaseNew, "cell 1 5 2 1");
-
-		lblNombre = new JLabel(BUNDLE.getString("Form.lblNombre.text")); //$NON-NLS-1$
-		panel_4.add(lblNombre, "cell 3 5,alignx right");
-
-		txtSchemaName = new JTextField();
-		txtSchemaName.setText(BUNDLE.getString("Form.textField.text_1")); //$NON-NLS-1$
-		panel_4.add(txtSchemaName, "cell 4 5 2 1,growx");
-		txtSchemaName.setColumns(10);
-
-		chkCaseLoad = new JCheckBox();
-		chkCaseLoad.setText(BUNDLE.getString("Form.chckbxCargarUnCaso.text")); //$NON-NLS-1$
-		panel_4.add(chkCaseLoad, "cell 1 6");
-
-		JLabel lblSelectSchema = new JLabel(
-				BUNDLE.getString("Form.lblSelectSchema.text")); //$NON-NLS-1$
-		panel_4.add(lblSelectSchema, "cell 3 6 1 2,alignx right");
-
-		cboSchema = new JComboBox<String>();
-		cboSchema.setPreferredSize(new Dimension(24, 20));
-		cboSchema.setActionCommand(BUNDLE
-				.getString("Form.cboSchema.actionCommand")); //$NON-NLS-1$
-		cboSchema.setMinimumSize(new Dimension(150, 20));
-		panel_4.add(cboSchema, "cell 4 6 2 2,growx");
-
-		scrollPane_2 = new JScrollPane();
-		panel_4.add(scrollPane_2, "cell 2 3 3 1,grow");
-
-		txtFileSdf = new JTextArea();
-		scrollPane_2.setViewportView(txtFileSdf);
-		txtFileSdf.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		txtFileSdf.setLineWrap(true);
-
-		chkCaseDelete = new JCheckBox();
-		chkCaseDelete.setText(BUNDLE.getString("Form.chkCaseDelete.text")); //$NON-NLS-1$
-		panel_4.add(chkCaseDelete, "cell 1 7");
+		lblDataManager = new JLabel(BUNDLE.getString("Form.lblDataManager.text")); //$NON-NLS-1$
+		lblDataManager.setFont(new Font("Tahoma", Font.BOLD, 11));
+		panel_2.add(lblDataManager, "cell 0 1 4 1,alignx center");
+		
+		panel_3 = new JPanel();
+		panel_3.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panel_2.add(panel_3, "flowx,cell 0 2 5 4,grow");
+		panel_3.setLayout(new MigLayout("", "[40px][:100px:100px,grow][:100px:100px][:100px:100px][]", "[25px][4px][45px][45]"));
+		
+		btnClearData = new JButton(BUNDLE.getString("Form.btnClearData.text")); //$NON-NLS-1$
+		btnClearData.setMaximumSize(new Dimension(95, 23));
+		btnClearData.setMinimumSize(new Dimension(95, 23));
+		btnClearData.setActionCommand(BUNDLE.getString("Form.btnClearData.actionCommand")); //$NON-NLS-1$
+		panel_3.add(btnClearData, "flowx,cell 1 0,alignx center,aligny center");
+		
+		btnLoadRaster = new JButton(BUNDLE.getString("Form.btnLoadRaster.text"));
+		btnLoadRaster.setMaximumSize(new Dimension(95, 23));
+		btnLoadRaster.setMinimumSize(new Dimension(95, 23));
+		btnLoadRaster.setActionCommand(BUNDLE.getString("Form.btnLoadRaster.actionCommand")); //$NON-NLS-1$
+		panel_3.add(btnLoadRaster, "cell 2 0,alignx center,aligny center");
+		
+		btnExportSdf = new JButton(BUNDLE.getString("Form.btnExportSdf.text")); //$NON-NLS-1$
+		btnExportSdf.setMinimumSize(new Dimension(100, 23));
+		btnExportSdf.setMaximumSize(new Dimension(100, 23));
+		btnExportSdf.setActionCommand(BUNDLE.getString("Form.btnExportSdf.actionCommand")); //$NON-NLS-1$
+		panel_3.add(btnExportSdf, "cell 3 0,alignx center,aligny center");
+		
+		label = new JLabel();
+		label.setText("SDF file:");
+		panel_3.add(label, "cell 0 2,alignx right");
 				
-		btnAccept = new JButton();
-		btnAccept.setEnabled(false);
-		btnAccept.setText(BUNDLE.getString("Form.btnAccept.text")); //$NON-NLS-1$
-		btnAccept.setName("btn_accept_postgis");
-		btnAccept.setActionCommand(BUNDLE.getString("Form.btnAccept.actionCommand")); //$NON-NLS-1$
-		panel_4.add(btnAccept, "flowx,cell 4 8,alignx left");
+		scrollPane = new JScrollPane();
+		panel_3.add(scrollPane, "cell 1 2 3 1,grow");
+		
+		txtFileSdf = new JTextArea();
+		txtFileSdf.setLineWrap(true);
+		txtFileSdf.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		scrollPane.setViewportView(txtFileSdf);
+
+		btnFileSdf = new JButton();
+		panel_3.add(btnFileSdf, "cell 4 2");
+		btnFileSdf.setActionCommand(BUNDLE.getString("Form.btnFileInp.actionCommand")); //$NON-NLS-1$
+		btnFileSdf.setText("...");
+		btnFileSdf.setFont(new Font("Tahoma", Font.BOLD, 12));
+		
+		lblAscFile = new JLabel();
+		lblAscFile.setText(BUNDLE.getString("Form.lblAscFile.text")); //$NON-NLS-1$
+		panel_3.add(lblAscFile, "cell 0 3");
+		
+		scrollPane_1 = new JScrollPane();
+		panel_3.add(scrollPane_1, "cell 1 3 3 1,grow");
+		
+		txtFileAsc = new JTextArea();
+		scrollPane_1.setViewportView(txtFileAsc);
+		txtFileAsc.setLineWrap(true);
+		txtFileAsc.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		
+		btnFileAsc = new JButton();
+		btnFileAsc.setText("...");
+		btnFileAsc.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnFileAsc.setActionCommand(BUNDLE.getString("Form.btnFileAsc.actionCommand")); //$NON-NLS-1$
+		panel_3.add(btnFileAsc, "cell 4 3");
+		
+		lblSchemaManager = new JLabel(BUNDLE.getString("Form.lblSchemaManager.text")); //$NON-NLS-1$
+		lblSchemaManager.setFont(new Font("Tahoma", Font.BOLD, 11));
+		panel_2.add(lblSchemaManager, "cell 0 7 5 1,alignx center");
+		
+		panel_4 = new JPanel();
+		panel_4.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panel_2.add(panel_4, "cell 0 8 5 1,grow");
+		panel_4.setLayout(new MigLayout("", "[40px][:100px:100px][:100px:100px][:100px:100px][]", "[25px][4][][]"));
+		
+		btnSaveCase = new JButton(BUNDLE.getString("Form.btnSaveCase.text")); //$NON-NLS-1$
+		btnSaveCase.setMaximumSize(new Dimension(95, 23));
+		btnSaveCase.setMinimumSize(new Dimension(95, 23));
+		btnSaveCase.setActionCommand(BUNDLE.getString("Form.btnSaveCase.actionCommand")); //$NON-NLS-1$
+		panel_4.add(btnSaveCase, "cell 1 0,alignx center,aligny center");
+		
+		btnLoadCase = new JButton(BUNDLE.getString("Form.btnLoadCase.text")); //$NON-NLS-1$
+		btnLoadCase.setMaximumSize(new Dimension(95, 23));
+		btnLoadCase.setMinimumSize(new Dimension(95, 23));
+		btnLoadCase.setActionCommand(BUNDLE.getString("Form.btnLoadCase.actionCommand")); //$NON-NLS-1$
+		panel_4.add(btnLoadCase, "cell 2 0,alignx center,aligny center");
+		
+		btnDeleteCase = new JButton(BUNDLE.getString("Form.btnDeleteCase.text")); //$NON-NLS-1$
+		btnDeleteCase.setMaximumSize(new Dimension(100, 23));
+		btnDeleteCase.setMinimumSize(new Dimension(100, 23));
+		btnDeleteCase.setActionCommand(BUNDLE.getString("Form.btnDeleteCase.actionCommand")); //$NON-NLS-1$
+		panel_4.add(btnDeleteCase, "cell 3 0,alignx center,aligny center");
+		
+		lblNombre = new JLabel(BUNDLE.getString("Form.lblNombre.text"));
+		panel_4.add(lblNombre, "cell 1 2");
+		
+		txtSchemaName = new JTextField();
+		txtSchemaName.setText("schema_name");
+		txtSchemaName.setColumns(10);
+		panel_4.add(txtSchemaName, "cell 2 2 2 1,growx");
+				
+		JLabel lblSelectSchema = new JLabel(BUNDLE.getString("Form.lblSelectSchema.text"));
+		panel_4.add(lblSelectSchema, "cell 1 3");
+		
+		cboSchema = new JComboBox<String>();
+		panel_4.add(cboSchema, "cell 2 3 2 1,growx");
+		cboSchema.setPreferredSize(new Dimension(24, 20));
+		cboSchema.setActionCommand(BUNDLE.getString("Form.cboSchema.actionCommand")); //$NON-NLS-1$
+		cboSchema.setMinimumSize(new Dimension(150, 20));
 
 		// Select Database Options by default
 		tabbedPane.setSelectedIndex(0);
-		panel_4.setVisible(false);
+		panel_2.setVisible(false);
 
 		setupListeners();
 
@@ -402,16 +432,28 @@ public class Form extends JPanel implements ActionListener {
 			}
 		});
 		
-		// Panel Postgis
-		cboSchema.addActionListener(this);
+		// Panel Data Manager
+		btnClearData.addActionListener(this);
+		btnLoadRaster.addActionListener(this);
+		btnExportSdf.addActionListener(this);
 		btnFileSdf.addActionListener(this);
-		btnAccept.addActionListener(this);
+		btnFileAsc.addActionListener(this);		
+
+		btnSaveCase.addActionListener(this);
+		btnLoadCase.addActionListener(this);
+		btnDeleteCase.addActionListener(this);
+		cboSchema.addActionListener(this);
 
 	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		controller.action(e.getActionCommand());
+	}
+
+	public String getRasterFile() {
+		return null;
 	}
 
 	
